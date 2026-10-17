@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        working-directory: app
+        run: npm install
+      - name: Run tests
+        working-directory: app
+        run: npm test
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/myapp" >> $GITHUB_ENV
+      - name: Build Docker image
+        run: docker build -t $IMAGE:${{ github.sha }} app
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push image
+        run: docker push $IMAGE:${{ github.sha }}
