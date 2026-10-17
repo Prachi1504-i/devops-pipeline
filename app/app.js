@@ -10,7 +10,7 @@ const requests = new client.Counter({
 
 app.get('/', (req, res) => {
   requests.inc({ status: 200 });
-  res.send('Hello from the DevOps pipeline v1');
+  res.send('Hello from the DevOps pipeline v2');
 });
 
 app.get('/metrics', async (req, res) => {

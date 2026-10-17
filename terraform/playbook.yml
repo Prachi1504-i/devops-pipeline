@@ -1,0 +1,23 @@
+- name: Prepare host for containerized workloads
+  hosts: appservers
+  tasks:
+    - name: Check Docker is installed
+      command: docker --version
+      register: docker_v
+      changed_when: false
+
+    - name: Check kubectl is installed
+      command: kubectl version --client
+      register: kubectl_v
+      changed_when: false
+
+    - name: Show versions
+      debug:
+        msg:
+          - "{{ docker_v.stdout }}"
+          - "{{ kubectl_v.stdout_lines[0] }}"
+
+    - name: Ensure deploy folder exists
+      file:
+        path: /tmp/myapp-deploy
+        state: directory
